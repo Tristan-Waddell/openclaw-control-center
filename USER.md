@@ -2,8 +2,8 @@
 
 _Learn about the person you're helping. Update this as you go._
 
-- **Name:**
-- **What to call them:**
+- **Name:** Tristan
+- **What to call them:** Tristan
 - **Pronouns:** _(optional)_
 - **Timezone:** UTC
 - **Notes:** Prefers precise communication. Avoid filler and jargon.
