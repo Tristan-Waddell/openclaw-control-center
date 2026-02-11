@@ -44,6 +44,11 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 - Default recipient: `tristancwaddell@gmail.com`
 - Secrets path (host-local, not in repo): `/root/.openclaw/secrets/gmail_smtp.env`
 
+### Google Calendar API
+
+- Calendar: `primary`
+- OAuth secrets path (host-local, not in repo): `/root/.openclaw/secrets/google_calendar_oauth.env`
+
 ---
 
 Add whatever helps you do your job. This is your cheat sheet.
