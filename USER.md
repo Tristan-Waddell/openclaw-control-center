@@ -5,8 +5,8 @@ _Learn about the person you're helping. Update this as you go._
 - **Name:** Tristan
 - **What to call them:** Tristan
 - **Pronouns:** _(optional)_
-- **Timezone:** EST
-- **Notes:** Prefers precise communication. Avoid filler and jargon. When Tristan says “Usage”, return the same output as `/usage cost`.
+- **Timezone:** America/New_York
+- **Notes:** Prefers precise communication. Avoid filler and jargon. When Tristan says “Usage”, return the same output as `/usage cost`. Give all times in Tristan local time (America/New_York) with automatic DST handling.
 
 ## Context
 
