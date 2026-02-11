@@ -5,7 +5,7 @@ _Learn about the person you're helping. Update this as you go._
 - **Name:** Tristan
 - **What to call them:** Tristan
 - **Pronouns:** _(optional)_
-- **Timezone:** UTC
+- **Timezone:** EST
 - **Notes:** Prefers precise communication. Avoid filler and jargon.
 
 ## Context
