@@ -4,6 +4,7 @@ set -u
 BATCH_SIZE="${1:-${BATCH_SIZE:-25}}"
 MC_VERSION="${MC_VERSION:-1.20.1}"
 LOADER="${LOADER:-fabric}"
+IMPORT_TIMEOUT_SEC="${IMPORT_TIMEOUT_SEC:-120}"
 LAUNCH_TIMEOUT_SEC="${LAUNCH_TIMEOUT_SEC:-180}"
 
 PACKCRAFTER_REPO="/root/.openclaw/workspace/packcrafter-ai"
@@ -45,7 +46,11 @@ fi
 mapfile -t SELECTED_THEMES < <(printf '%s\n' "${THEMES[@]}" | shuf | head -n "$BATCH_SIZE")
 
 cleanup_processes() {
-  sudo -u tristanwaddell bash -lc "pkill -f 'prismlauncher' || true; pkill -f 'java.*minecraft' || true"
+  # Kill both root-owned wrapper processes and user-owned Prism/Java processes.
+  pkill -f 'prismlauncher --dir' >/dev/null 2>&1 || true
+  pkill -f '/app/bin/prismrun' >/dev/null 2>&1 || true
+  pkill -f 'java-runtime-gamma/bin/java' >/dev/null 2>&1 || true
+  sudo -u tristanwaddell bash -lc "pkill -f 'prismlauncher' >/dev/null 2>&1 || true; pkill -f '/app/bin/prismrun' >/dev/null 2>&1 || true; pkill -f 'java-runtime-gamma/bin/java' >/dev/null 2>&1 || true"
   sleep 2
 }
 
@@ -140,11 +145,13 @@ PY
     sudo -u tristanwaddell bash -lc "find '$PRISM_ROOT/instances' -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort" > "$pre_instances" 2>/dev/null || true
 
     cleanup_processes
-    if sudo -u tristanwaddell bash -lc "QT_QPA_PLATFORM=offscreen prismlauncher --dir '$PRISM_ROOT' --import '$export_copy'" >"$import_log" 2>&1; then
+    if timeout --signal=TERM --kill-after=10 "$IMPORT_TIMEOUT_SEC" sudo -u tristanwaddell bash -lc "QT_QPA_PLATFORM=offscreen prismlauncher --dir '$PRISM_ROOT' --import '$export_copy'" >"$import_log" 2>&1; then
       import_ok=true
     else
       import_ok=false
     fi
+    # Ensure import does not leave GUI/runtime processes around.
+    cleanup_processes
 
     sudo -u tristanwaddell bash -lc "find '$PRISM_ROOT/instances' -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort" > "$post_instances" 2>/dev/null || true
 
@@ -172,6 +179,12 @@ for n in names:
 print(best)
 PY
 )"
+    fi
+
+    # Prism may exit non-zero in headless mode/account refresh (e.g., 429),
+    # while import still succeeds. Treat detected instance as import success.
+    if [[ -n "$instance_id" ]]; then
+      import_ok=true
     fi
 
     if [[ -n "$instance_id" ]]; then
@@ -234,6 +247,9 @@ with open(record_path,'a',encoding='utf-8') as f:
 PY
 
   echo "[$run_id] status=$status gen=$gen_ok import=$import_ok launch=$launch_ok instance=${instance_id:-none}"
+
+  # Backoff to reduce rate-limit pressure (Modrinth/Microsoft services).
+  sleep 15
 
 done
 
