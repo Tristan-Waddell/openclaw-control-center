@@ -14,3 +14,7 @@
 ## Calendar defaults
 - New Google Calendar events should default to 30-minute prior reminder.
 - Auto-normalize capitalization/formatting and enrich event details when appropriate.
+
+## Current project context
+- PackCrafter repo cloned locally at `/root/.openclaw/workspace/packcrafter-ai` (branch `dev`).
+- High-level architecture understood: Modrinth candidate retrieval + scoring, Claude-based slot selection, dependency resolution with repair/pruning, `.mrpack` packaging, and premium-gated generation/download APIs.
