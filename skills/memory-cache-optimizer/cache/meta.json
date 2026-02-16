@@ -1,0 +1,14 @@
+{
+  "skill": "memory-cache-optimizer",
+  "version": "1.0.0",
+  "index_mode": "jsonl",
+  "limits": {
+    "max_cache_mb": 250,
+    "ttl_days": {
+      "exact": 30,
+      "semantic": 7
+    },
+    "similarity_threshold": 0.88,
+    "capsule_token_budget": 700
+  }
+}

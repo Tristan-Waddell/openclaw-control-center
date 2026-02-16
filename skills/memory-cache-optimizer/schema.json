@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "memory-cache-optimizer cache entry",
+  "type": "object",
+  "required": [
+    "id",
+    "type",
+    "created_at",
+    "expires_at",
+    "context_signature",
+    "prompt_fingerprint",
+    "capsule",
+    "result_summary",
+    "stats",
+    "source_files"
+  ],
+  "properties": {
+    "id": { "type": "string", "minLength": 16 },
+    "type": { "type": "string", "enum": ["exact", "semantic"] },
+    "created_at": { "type": "string", "format": "date-time" },
+    "expires_at": { "type": "string", "format": "date-time" },
+    "context_signature": { "type": "string", "minLength": 16 },
+    "prompt_fingerprint": { "type": "string", "minLength": 16 },
+    "embedding": {
+      "type": ["array", "null"],
+      "items": { "type": "number" }
+    },
+    "capsule": {
+      "type": "object",
+      "required": ["stable_facts", "recent_changes", "open_loops", "relevant_snippets"],
+      "properties": {
+        "stable_facts": { "type": "array", "items": { "type": "string" } },
+        "recent_changes": { "type": "array", "items": { "type": "string" } },
+        "open_loops": { "type": "array", "items": { "type": "string" } },
+        "relevant_snippets": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+    "result_summary": { "type": "string" },
+    "stats": {
+      "type": "object",
+      "required": ["tokens_avoided_est", "size_bytes"],
+      "properties": {
+        "tokens_avoided_est": { "type": "integer", "minimum": 0 },
+        "size_bytes": { "type": "integer", "minimum": 0 },
+        "hits": { "type": "integer", "minimum": 0 },
+        "last_accessed_at": { "type": ["string", "null"], "format": "date-time" }
+      },
+      "additionalProperties": true
+    },
+    "source_files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "mtime", "size"],
+        "properties": {
+          "path": { "type": "string" },
+          "mtime": { "type": "number" },
+          "size": { "type": "integer", "minimum": 0 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "blob_path": { "type": ["string", "null"] },
+    "skill_version": { "type": "string" }
+  },
+  "additionalProperties": false
+}
