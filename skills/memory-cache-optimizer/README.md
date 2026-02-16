@@ -32,9 +32,18 @@ Cache entry is invalid when:
 
 > Warning: Skills should be reviewed like code before production use.
 
+## Scripts
+- `scripts/cache_key.py`: computes normalized prompt fingerprint + context signature + exact key.
+- `scripts/cache_lookup.py`: exact/semantic lookup with bypass support + cache report + metrics append.
+- `scripts/cache_store.py`: stores redacted entry/blob + metrics append.
+- `scripts/cache_gc.py`: evicts expired/low-value entries to stay within size limits.
+- `scripts/compact_memory.py`: writes compact, high-signal memory updates.
+
 ## Quick verification
-1. Run same prompt twice with unchanged memory → second run should hit exact cache.
-2. Modify `memory/YYYY-MM-DD.md` → next run should miss due to signature change.
-3. Use paraphrase prompt (same entities) with embeddings enabled → semantic hit expected.
-4. Include `fresh` in prompt → bypass expected.
-5. Insert fake token in input → verify cached blob has redacted value.
+1. Compute key/signature with `cache_key.py`.
+2. Store one entry with `cache_store.py`.
+3. Run same prompt via `cache_lookup.py` with same context signature → exact hit.
+4. Modify `memory/YYYY-MM-DD.md` and recompute signature → miss.
+5. Use paraphrase + embedding (if available) with same signature → semantic hit.
+6. Include `fresh` in prompt → bypass.
+7. Insert fake token in capsule JSON and store; inspect blob for redaction.
