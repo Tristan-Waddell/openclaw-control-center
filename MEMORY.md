@@ -11,6 +11,7 @@ Only rely on it in the MAIN/private 1:1 session context. :contentReference[oaici
 ## Working style preferences
 - Default to concise, direct instructions.
 - For content/copywriting requests (e.g., LinkedIn posts), use the `communications` subagent first.
+- In generated copy, avoid formulaic contrast phrasing like “It isn’t X, it’s Y.”
 - When editing configs/scripts: show complete snippets with clear filenames.
 - Ask before destructive or external actions.
 
