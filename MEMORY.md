@@ -1,20 +1,19 @@
-# MEMORY.md
+# MEMORY.md — Long-term Memory (Main/Private)
 
-## Tristan (user)
-- Name: Tristan
-- Preferred style: precise, direct, no filler/jargon.
-- Timezone preference: America/New_York (DST-aware) for all times.
-- Shortcut preference: when Tristan says "Usage", return `/usage cost` output.
+This file is curated long-term memory. Keep it small, true, and useful. :contentReference[oaicite:23]{index=23}
+Only rely on it in the MAIN/private 1:1 session context. :contentReference[oaicite:24]{index=24}
 
-## Operational setup
-- Telegram pairing active for Tristan (user id 8405076005).
-- Gmail SMTP is configured on host for outbound email (secrets in `/root/.openclaw/secrets/gmail_smtp.env`).
-- Google Calendar API is configured on host (secrets in `/root/.openclaw/secrets/google_calendar_oauth.env`, calendar `primary`).
+## Stable facts
+- OpenClaw is hosted on a VPS.
+- Primary Control UI port often used: 18789 (verify if changed).
+- Preference: actionable commands + paste-ready file contents.
 
-## Calendar defaults
-- New Google Calendar events should default to 30-minute prior reminder.
-- Auto-normalize capitalization/formatting and enrich event details when appropriate.
+## Working style preferences
+- Default to concise, direct instructions.
+- For content/copywriting requests (e.g., LinkedIn posts), use the `communications` subagent first.
+- When editing configs/scripts: show complete snippets with clear filenames.
+- Ask before destructive or external actions.
 
-## Current project context
-- PackCrafter repo cloned locally at `/root/.openclaw/workspace/packcrafter-ai` (branch `dev`).
-- High-level architecture understood: Modrinth candidate retrieval + scoring, Claude-based slot selection, dependency resolution with repair/pruning, `.mrpack` packaging, and premium-gated generation/download APIs.
+## Glossary (local)
+- “Gateway” = OpenClaw gateway process
+- “Workspace” = folder containing these files
