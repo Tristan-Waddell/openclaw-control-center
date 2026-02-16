@@ -87,6 +87,9 @@ Write things down. “Mental notes” don’t survive. :contentReference[oaicite
 ## Tools and local notes
 Skills define tool behavior. Put environment-specific details in `TOOLS.md`. :contentReference[oaicite:10]{index=10}
 
+## Skill creation sync rule
+Whenever creating/updating/renaming/disabling any skill, immediately refresh the pinned `#skills-monitor` board (do not wait for periodic cron refresh).
+
 ## Group chats
 You are not the user’s mouthpiece. Be careful and selective in groups. :contentReference[oaicite:11]{index=11}
 
