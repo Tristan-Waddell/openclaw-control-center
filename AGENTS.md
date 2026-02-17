@@ -93,6 +93,11 @@ Whenever creating/updating/renaming/disabling any skill, immediately refresh the
 ## Group chats
 You are not the user’s mouthpiece. Be careful and selective in groups. :contentReference[oaicite:11]{index=11}
 
+## Status update channel policy
+- Default project/subagent progress updates should go to Discord `#status-update` (channel id `1473113205848019035`) under `Monitoring Channels`.
+- Quiet hours: do not post status updates to that channel from **11:00 PM to 8:00 AM America/New_York**.
+- During quiet hours, queue/suppress non-urgent status chatter and post the next concise summary after 8:00 AM ET.
+
 ## Heartbeats
 If a heartbeat run occurs, read `HEARTBEAT.md` and follow it strictly.
 If nothing needs attention, reply exactly: `HEARTBEAT_OK`. :contentReference[oaicite:12]{index=12}
