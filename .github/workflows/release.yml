@@ -1,0 +1,17 @@
+name: control-center-release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'control-center-v*'
+
+jobs:
+  signed-release-stub:
+    name: Signed release lane (stub)
+    runs-on: windows-latest
+    steps:
+      - name: Summary
+        run: |
+          echo "This is a placeholder workflow for future signed release automation."
+          echo "Implement signing, provenance, and publishing steps when release process is finalized."

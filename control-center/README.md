@@ -1,5 +1,7 @@
 # Control Center (Epic 2 Skeleton)
 
+Control Center is a **Windows-first WPF desktop application**.
+
 Windows-only starter skeleton for Control Center with strict architecture boundaries:
 
 - **UI** (`ControlCenter.UI`) → WPF shell + WebView2 host
@@ -45,3 +47,10 @@ Architecture guardrails are enforced in `Directory.Build.targets` during `dotnet
 - Infrastructure cannot reference UI/App
 
 CI (`.github/workflows/control-center-ci.yml`) runs build + test on `windows-latest`, so rule breaks fail PRs.
+
+## Contributing Expectations
+
+- UI work targets Windows and should be verified on Windows.
+- Keep architecture boundaries intact.
+- Include tests for behavioral changes.
+- Follow `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, and PR/issue templates.
