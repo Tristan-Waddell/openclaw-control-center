@@ -28,20 +28,35 @@ public sealed class GatewayRealtimeClient : IRealtimeClient
         IReadOnlyList<RealtimeSubscriptionDto> subscriptions,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
+        IReadOnlyList<RealtimeEventEnvelopeDto> events;
+
         try
         {
-            await foreach (var envelope in ConnectWebSocketAsync(subscriptions, cancellationToken))
-            {
-                yield return envelope;
-            }
+            events = await ReadAllAsync(ConnectWebSocketAsync(subscriptions, cancellationToken), cancellationToken);
         }
         catch
         {
-            await foreach (var envelope in ConnectSseAsync(subscriptions, cancellationToken))
-            {
-                yield return envelope;
-            }
+            events = await ReadAllAsync(ConnectSseAsync(subscriptions, cancellationToken), cancellationToken);
         }
+
+        foreach (var envelope in events)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            yield return envelope;
+        }
+    }
+
+    private static async Task<IReadOnlyList<RealtimeEventEnvelopeDto>> ReadAllAsync(
+        IAsyncEnumerable<RealtimeEventEnvelopeDto> source,
+        CancellationToken cancellationToken)
+    {
+        var output = new List<RealtimeEventEnvelopeDto>();
+        await foreach (var item in source.WithCancellation(cancellationToken))
+        {
+            output.Add(item);
+        }
+
+        return output;
     }
 
     private async IAsyncEnumerable<RealtimeEventEnvelopeDto> ConnectWebSocketAsync(

@@ -68,4 +68,23 @@ public sealed class RealtimeSyncService
 
         return processed;
     }
+
+    public async Task<int> ReconcileAsync(
+        IReadOnlyList<RealtimeEventEnvelopeDto> authoritativeBacklog,
+        CancellationToken cancellationToken = default)
+    {
+        var replayed = 0;
+        foreach (var envelope in authoritativeBacklog.OrderBy(x => x.OccurredAtUtc))
+        {
+            if (await _eventJournal.HasProcessedAsync(envelope.EventId, cancellationToken))
+            {
+                continue;
+            }
+
+            await _eventJournal.AppendAsync(envelope, cancellationToken);
+            replayed++;
+        }
+
+        return replayed;
+    }
 }

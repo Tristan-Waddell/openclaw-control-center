@@ -8,6 +8,16 @@ public sealed class ReliabilityService
     private readonly ConcurrentDictionary<string, DateTimeOffset> _idempotencyKeys = new(StringComparer.Ordinal);
     private int _consecutiveFailures;
 
+    public RuntimeMode EvaluateRuntimeMode(bool isGatewayReachable, bool isRealtimeConnected)
+    {
+        if (!isGatewayReachable)
+        {
+            return RuntimeMode.Offline;
+        }
+
+        return isRealtimeConnected ? RuntimeMode.Online : RuntimeMode.Degraded;
+    }
+
     public bool TryRegisterIdempotencyKey(string key)
         => _idempotencyKeys.TryAdd(key, DateTimeOffset.UtcNow);
 
@@ -51,4 +61,14 @@ public sealed class ReliabilityService
         var hash = sha.ComputeHash(stream);
         return Convert.ToHexString(hash);
     }
+
+    public bool ValidateCacheIntegrity(string filePath, string expectedHash)
+        => string.Equals(ComputeCacheIntegrityHash(filePath), expectedHash, StringComparison.OrdinalIgnoreCase);
+}
+
+public enum RuntimeMode
+{
+    Online,
+    Degraded,
+    Offline
 }

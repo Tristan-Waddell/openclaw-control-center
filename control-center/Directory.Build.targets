@@ -29,7 +29,7 @@
                           ) or
                           (
                             '$(MSBuildProjectName)' == 'ControlCenter.Infrastructure' and
-                            $([System.String]::Copy('%(ProjectReference.Identity)').Contains('ControlCenter.App'))
+                            $([System.String]::Copy('%(ProjectReference.Identity)').Contains('ControlCenter.App.csproj'))
                           )
                         " />
     </ItemGroup>
