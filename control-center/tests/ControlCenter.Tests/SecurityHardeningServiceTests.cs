@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text;
 using ControlCenter.Application.Abstractions;
 using ControlCenter.Application.Services;
 
@@ -17,6 +19,32 @@ public sealed class SecurityHardeningServiceTests
 
         Assert.True(ok);
         Assert.Single(audit.Rows);
+    }
+
+    [Fact]
+    public void VerifySignedUpdate_ReturnsTrue_ForValidSignature()
+    {
+        using var rsa = RSA.Create(2048);
+        var payload = Encoding.UTF8.GetBytes("control-center-update");
+        var signature = rsa.SignData(payload, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+        var service = new SecurityHardeningService(new InMemoryAuditTrail(), new InMemorySecretStore());
+
+        var ok = service.VerifySignedUpdate(payload, signature, rsa.ExportRSAPublicKeyPem());
+
+        Assert.True(ok);
+    }
+
+    [Fact]
+    public async Task RecordMutationAuditAsync_RedactsBeforePersist()
+    {
+        var audit = new InMemoryAuditTrail();
+        var service = new SecurityHardeningService(audit, new InMemorySecretStore());
+
+        await service.RecordMutationAuditAsync("ops", "update-config", "gateway", "token=abc123");
+
+        Assert.Single(audit.Rows);
+        Assert.DoesNotContain("abc123", audit.Rows[0]);
+        Assert.Contains("token=***", audit.Rows[0]);
     }
 
     [Fact]

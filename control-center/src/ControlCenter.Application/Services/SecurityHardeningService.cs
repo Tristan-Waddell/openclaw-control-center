@@ -1,5 +1,5 @@
 using System.Security.Cryptography;
-using System.Text;
+using System.Text.RegularExpressions;
 using ControlCenter.Application.Abstractions;
 
 namespace ControlCenter.Application.Services;
@@ -44,10 +44,11 @@ public sealed class SecurityHardeningService
             return input;
         }
 
-        return input
-            .Replace("token=", "token=***", StringComparison.OrdinalIgnoreCase)
-            .Replace("password=", "password=***", StringComparison.OrdinalIgnoreCase)
-            .Replace("secret=", "secret=***", StringComparison.OrdinalIgnoreCase);
+        return Regex.Replace(
+            input,
+            "(?i)\\b(token|password|secret)=([^\\s;,&]+)",
+            "$1=***",
+            RegexOptions.CultureInvariant);
     }
 
     public Task RecordMutationAuditAsync(string actor, string action, string target, string details, CancellationToken cancellationToken = default)
