@@ -1,0 +1,85 @@
+name: control-center-ci
+
+on:
+  push:
+    paths:
+      - 'control-center/**'
+      - '.github/workflows/control-center-ci.yml'
+  pull_request:
+    paths:
+      - 'control-center/**'
+      - '.github/workflows/control-center-ci.yml'
+
+jobs:
+  windows-full:
+    name: windows-full (restore/build/test + security)
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: control-center
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore solution
+        run: dotnet restore ControlCenter.sln
+
+      - name: Build solution (architecture rules enforced)
+        run: dotnet build ControlCenter.sln --configuration Release --no-restore
+
+      - name: Test solution
+        run: dotnet test ControlCenter.sln --configuration Release --no-build
+
+      - name: NuGet vulnerability scan
+        run: dotnet list ControlCenter.sln package --vulnerable --include-transitive
+
+      - name: Validate signed artifact (when provided)
+        shell: pwsh
+        run: |
+          if ($env:CONTROL_CENTER_SIGNED_ARTIFACT) {
+            ./scripts/validate-signed-artifacts.ps1 -Path $env:CONTROL_CENTER_SIGNED_ARTIFACT
+          }
+          else {
+            Write-Host "CONTROL_CENTER_SIGNED_ARTIFACT not set; skipping signature validation."
+          }
+
+      - name: Job summary
+        shell: pwsh
+        run: |
+          Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "### windows-full"
+          Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "- Restored, built, and tested ControlCenter.sln on windows-latest."
+          Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "- Ran NuGet vulnerability scan and optional signed artifact validation."
+
+  cross-platform-core:
+    name: cross-platform-core (domain/application/core tests)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: control-center
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore core test project
+        run: dotnet restore tests/ControlCenter.Tests/ControlCenter.Tests.csproj
+
+      - name: Build core test project
+        run: dotnet build tests/ControlCenter.Tests/ControlCenter.Tests.csproj --configuration Release --no-restore
+
+      - name: Run core tests
+        run: dotnet test tests/ControlCenter.Tests/ControlCenter.Tests.csproj --configuration Release --no-build
+
+      - name: Job summary
+        run: |
+          echo "### cross-platform-core" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Validated non-WPF/core test lane on ubuntu-latest." >> "$GITHUB_STEP_SUMMARY"

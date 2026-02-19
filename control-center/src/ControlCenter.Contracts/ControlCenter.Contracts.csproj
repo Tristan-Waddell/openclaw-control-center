@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>ControlCenter.Contracts</AssemblyName>
+    <RootNamespace>ControlCenter.Contracts</RootNamespace>
+  </PropertyGroup>
+</Project>

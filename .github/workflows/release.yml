@@ -1,0 +1,149 @@
+name: control-center-release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'control-center-v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-sign-package:
+    name: Build + package MSIX (+ optional signing)
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: control-center
+    outputs:
+      prerelease: ${{ steps.tag_meta.outputs.prerelease }}
+      version: ${{ steps.tag_meta.outputs.version }}
+
+    env:
+      WINDOWS_SIGNING_CERT_BASE64: ${{ secrets.WINDOWS_SIGNING_CERT_BASE64 }}
+      WINDOWS_SIGNING_CERT_PASSWORD: ${{ secrets.WINDOWS_SIGNING_CERT_PASSWORD }}
+      WINDOWS_TIMESTAMP_URL: ${{ secrets.WINDOWS_TIMESTAMP_URL }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Derive release metadata from tag
+        id: tag_meta
+        shell: pwsh
+        run: |
+          $tag = "${{ github.ref_name }}"
+          if ($tag -notmatch '^control-center-v(?<version>.+)$') {
+            throw "Unexpected tag format: $tag"
+          }
+
+          $version = $Matches['version']
+          $isBeta = $version -match '(?i)-beta(\.|$)'
+
+          "version=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          "prerelease=$($isBeta.ToString().ToLowerInvariant())" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
+          Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "### Release metadata"
+          Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "- Tag: $tag"
+          Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "- Version: $version"
+          Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "- Prerelease (beta channel): $isBeta"
+
+      - name: Restore solution
+        run: dotnet restore ControlCenter.sln
+
+      - name: Build solution
+        run: dotnet build ControlCenter.sln --configuration Release --no-restore
+
+      - name: Test solution
+        run: dotnet test ControlCenter.sln --configuration Release --no-build
+
+      - name: Publish MSIX package (unsigned)
+        run: >-
+          dotnet publish src/ControlCenter.UI/ControlCenter.UI.csproj
+          --configuration Release
+          -r win-x64
+          -p:WindowsPackageType=MSIX
+          -p:GenerateAppxPackageOnBuild=true
+          -p:AppxPackageSigningEnabled=false
+          -p:AppxBundle=Never
+
+      - name: Locate MSIX artifact
+        id: locate_msix
+        shell: pwsh
+        run: |
+          $artifact = Get-ChildItem -Path . -Recurse -File -Include *.msix | Sort-Object LastWriteTimeUtc -Descending | Select-Object -First 1
+          if (-not $artifact) {
+            throw "MSIX artifact not found after publish."
+          }
+
+          $artifactPath = $artifact.FullName
+          "artifact_path=$artifactPath" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "- Located MSIX: $artifactPath"
+
+      - name: Check signing prerequisites
+        id: signing_ready
+        shell: pwsh
+        run: |
+          $hasCert = -not [string]::IsNullOrWhiteSpace($env:WINDOWS_SIGNING_CERT_BASE64)
+          $hasPassword = -not [string]::IsNullOrWhiteSpace($env:WINDOWS_SIGNING_CERT_PASSWORD)
+          $hasTimestamp = -not [string]::IsNullOrWhiteSpace($env:WINDOWS_TIMESTAMP_URL)
+          $ready = $hasCert -and $hasPassword -and $hasTimestamp
+
+          "ready=$($ready.ToString().ToLowerInvariant())" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
+          if ($ready) {
+            Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "- Signing mode: enabled (all signing secrets present)."
+          }
+          else {
+            Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "- Signing mode: disabled (one or more signing secrets missing)."
+          }
+
+      - name: Materialize signing certificate
+        if: steps.signing_ready.outputs.ready == 'true'
+        shell: pwsh
+        run: |
+          $pfxPath = Join-Path $env:RUNNER_TEMP "windows-signing-cert.pfx"
+          [IO.File]::WriteAllBytes($pfxPath, [Convert]::FromBase64String($env:WINDOWS_SIGNING_CERT_BASE64))
+          "SIGNING_CERT_PATH=$pfxPath" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Sign MSIX artifact
+        if: steps.signing_ready.outputs.ready == 'true'
+        shell: pwsh
+        run: |
+          & signtool sign /fd SHA256 /f "$env:SIGNING_CERT_PATH" /p "$env:WINDOWS_SIGNING_CERT_PASSWORD" /tr "$env:WINDOWS_TIMESTAMP_URL" /td SHA256 "${{ steps.locate_msix.outputs.artifact_path }}"
+
+      - name: Verify signature (signed release)
+        if: steps.signing_ready.outputs.ready == 'true'
+        shell: pwsh
+        run: |
+          ./scripts/validate-signed-artifacts.ps1 -Path "${{ steps.locate_msix.outputs.artifact_path }}"
+
+      - name: Upload MSIX artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: control-center-msix-${{ steps.tag_meta.outputs.version }}
+          path: ${{ steps.locate_msix.outputs.artifact_path }}
+
+  publish-release:
+    name: Publish GitHub release
+    runs-on: ubuntu-latest
+    needs: build-sign-package
+    steps:
+      - name: Download built artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: control-center-msix-${{ needs.build-sign-package.outputs.version }}
+          path: release-assets
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release-assets/*.msix
+          prerelease: ${{ needs.build-sign-package.outputs.prerelease == 'true' }}
+          generate_release_notes: true
+          fail_on_unmatched_files: true
