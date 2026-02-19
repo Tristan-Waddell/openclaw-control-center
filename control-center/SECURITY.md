@@ -6,7 +6,7 @@ Control Center is currently pre-1.0. Security fixes are made on `main`.
 
 ## Reporting a Vulnerability
 
-Please report suspected vulnerabilities privately via `security@controlcenter.local`.
+Please report suspected vulnerabilities privately via `0jmhml0xk@mozmail.com`.
 
 Include:
 - Affected version/commit

@@ -48,6 +48,15 @@ Architecture guardrails are enforced in `Directory.Build.targets` during `dotnet
 
 CI (`.github/workflows/control-center-ci.yml`) runs build + test on `windows-latest`, so rule breaks fail PRs.
 
+## Releases (MSIX + Signing)
+
+Tag-based releases are handled by `.github/workflows/release.yml`.
+
+- Stable channel tags: `control-center-vX.Y.Z`
+- Beta channel tags (published as prerelease): `control-center-vX.Y.Z-beta.N`
+
+See `docs/release-signing.md` for packaging, signing, and repository secret requirements.
+
 ## Contributing Expectations
 
 - UI work targets Windows and should be verified on Windows.
