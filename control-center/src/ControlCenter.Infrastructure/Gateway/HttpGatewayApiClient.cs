@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.Http.Json;
 using ControlCenter.Application.Abstractions;
 using ControlCenter.Contracts;
@@ -21,13 +22,49 @@ public sealed class HttpGatewayApiClient : IGatewayApiClient
 
     public async Task<IReadOnlyList<AgentSummaryDto>> GetAgentsAsync(CancellationToken cancellationToken = default)
     {
-        return await _httpClient.GetFromJsonAsync<List<AgentSummaryDto>>("api/v1/agents", cancellationToken)
-            ?? [];
+        return await TryGetAsync<List<AgentSummaryDto>>("api/v1/agents", cancellationToken) ?? [];
     }
 
     public async Task<IReadOnlyList<ProjectSummaryDto>> GetProjectsAsync(CancellationToken cancellationToken = default)
     {
-        return await _httpClient.GetFromJsonAsync<List<ProjectSummaryDto>>("api/v1/projects", cancellationToken)
-            ?? [];
+        return await TryGetAsync<List<ProjectSummaryDto>>("api/v1/projects", cancellationToken) ?? [];
+    }
+
+    public async Task<IReadOnlyList<TaskRunDto>> GetActiveRunsAsync(CancellationToken cancellationToken = default)
+    {
+        return await TryGetAsync<List<TaskRunDto>>("api/v1/tasks/active", cancellationToken) ?? [];
+    }
+
+    public async Task<UsageSummaryDto> GetUsageSummaryAsync(CancellationToken cancellationToken = default)
+    {
+        return await TryGetAsync<UsageSummaryDto>("api/v1/usage/summary", cancellationToken)
+            ?? new UsageSummaryDto(0, 0, 0m);
+    }
+
+    public async Task<IReadOnlyList<CronJobDto>> GetCronJobsAsync(CancellationToken cancellationToken = default)
+    {
+        return await TryGetAsync<List<CronJobDto>>("api/v1/cron/jobs", cancellationToken) ?? [];
+    }
+
+    public async Task<IReadOnlyList<SkillDto>> GetSkillsAsync(CancellationToken cancellationToken = default)
+    {
+        return await TryGetAsync<List<SkillDto>>("api/v1/skills", cancellationToken) ?? [];
+    }
+
+    public async Task<IReadOnlyList<ConfigEntryDto>> GetConfigEntriesAsync(CancellationToken cancellationToken = default)
+    {
+        return await TryGetAsync<List<ConfigEntryDto>>("api/v1/config", cancellationToken) ?? [];
+    }
+
+    private async Task<T?> TryGetAsync<T>(string relativeUrl, CancellationToken cancellationToken)
+    {
+        using var response = await _httpClient.GetAsync(relativeUrl, cancellationToken);
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            return default;
+        }
+
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<T>(cancellationToken: cancellationToken);
     }
 }

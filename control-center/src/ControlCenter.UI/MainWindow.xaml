@@ -44,7 +44,7 @@
 
             <Border Background="{StaticResource CC.SurfaceBrush}" Padding="12" CornerRadius="8" Margin="0,0,0,12">
                 <DockPanel>
-                    <TextBlock Text="Core Platform Services"
+                    <TextBlock Text="Dashboard"
                                Style="{StaticResource CC.Title}"
                                DockPanel.Dock="Left"
                                AutomationProperties.Name="Top bar title" />
@@ -57,77 +57,75 @@
             </Border>
 
             <Grid Grid.Row="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
+                <Grid Name="LoadingState" Visibility="Visible">
+                    <TextBlock Text="Loading dashboard..."
+                               Style="{StaticResource CC.Body}"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Center"
+                               AutomationProperties.Name="Loading state" />
+                </Grid>
 
-                <StackPanel Orientation="Horizontal">
-                    <Border Style="{StaticResource CC.Card}" Width="250">
-                        <StackPanel>
-                            <TextBlock Style="{StaticResource CC.Title}" Text="Gateway" />
-                            <TextBlock Name="GatewayStatusText" Style="{StaticResource CC.Body}" Text="Unknown" />
-                        </StackPanel>
-                    </Border>
-                    <Border Style="{StaticResource CC.Card}" Width="250">
-                        <StackPanel>
-                            <TextBlock Style="{StaticResource CC.Title}" Text="Realtime" />
-                            <TextBlock Name="RealtimeStatusText" Style="{StaticResource CC.Body}" Text="Disconnected" />
-                        </StackPanel>
-                    </Border>
-                    <Border Style="{StaticResource CC.Card}" Width="250">
-                        <StackPanel>
-                            <TextBlock Style="{StaticResource CC.Title}" Text="Cache" />
-                            <TextBlock Name="CacheStatusText" Style="{StaticResource CC.Body}" Text="Not Initialized" />
-                        </StackPanel>
-                    </Border>
-                </StackPanel>
+                <Grid Name="EmptyState" Visibility="Collapsed">
+                    <TextBlock Text="No data available yet."
+                               Style="{StaticResource CC.Body}"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Center"
+                               AutomationProperties.Name="Empty state" />
+                </Grid>
 
-                <Grid Grid.Row="1">
-                    <Grid Name="LoadingState" Visibility="Visible">
-                        <TextBlock Text="Loading dashboard..."
-                                   Style="{StaticResource CC.Body}"
-                                   VerticalAlignment="Center"
-                                   HorizontalAlignment="Center"
-                                   AutomationProperties.Name="Loading state" />
-                    </Grid>
+                <Grid Name="ErrorState" Visibility="Collapsed">
+                    <TextBlock Name="ErrorText"
+                               Text="Failed to load data"
+                               Foreground="Tomato"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Center"
+                               AutomationProperties.Name="Error state" />
+                </Grid>
 
-                    <Grid Name="EmptyState" Visibility="Collapsed">
-                        <TextBlock Text="No data available yet."
-                                   Style="{StaticResource CC.Body}"
-                                   VerticalAlignment="Center"
-                                   HorizontalAlignment="Center"
-                                   AutomationProperties.Name="Empty state" />
-                    </Grid>
+                <Grid Name="ContentState" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
 
-                    <Grid Name="ErrorState" Visibility="Collapsed">
-                        <TextBlock Name="ErrorText"
-                                   Text="Failed to load data"
-                                   Foreground="Tomato"
-                                   VerticalAlignment="Center"
-                                   HorizontalAlignment="Center"
-                                   AutomationProperties.Name="Error state" />
-                    </Grid>
+                    <ItemsControl Name="HealthTilesItems" Margin="0,0,0,12">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource CC.Card}" Width="260">
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource CC.Title}" Text="{Binding Title}" />
+                                        <TextBlock Style="{StaticResource CC.Body}" Text="{Binding Value}" FontSize="20" FontWeight="SemiBold" />
+                                        <TextBlock Style="{StaticResource CC.Body}" Text="{Binding Detail}" />
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
 
-                    <Border Name="ContentState" Visibility="Collapsed" Style="{StaticResource CC.Card}" Margin="0">
+                    <Border Grid.Row="1" Style="{StaticResource CC.Card}" Margin="0">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
-                            <TextBlock Text="Projects" Style="{StaticResource CC.Title}" Margin="0,0,0,8" />
+
+                            <TextBlock Text="Needs attention" Style="{StaticResource CC.Title}" Margin="0,0,0,8" />
                             <DataGrid Grid.Row="1"
-                                      Name="ProjectsGrid"
+                                      Name="NeedsAttentionGrid"
                                       AutoGenerateColumns="False"
                                       IsReadOnly="True"
                                       HeadersVisibility="Column"
                                       Background="{StaticResource CC.SurfaceAltBrush}"
                                       Foreground="{StaticResource CC.TextBrush}">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="2*" />
-                                    <DataGridTextColumn Header="Branch" Binding="{Binding Branch}" Width="*" />
-                                    <DataGridTextColumn Header="Commit" Binding="{Binding CommitSha}" Width="*" />
-                                    <DataGridTextColumn Header="Health" Binding="{Binding Health}" Width="*" />
+                                    <DataGridTextColumn Header="Category" Binding="{Binding Category}" Width="*" />
+                                    <DataGridTextColumn Header="Target" Binding="{Binding Title}" Width="2*" />
+                                    <DataGridTextColumn Header="Detail" Binding="{Binding Detail}" Width="3*" />
                                 </DataGrid.Columns>
                             </DataGrid>
                         </Grid>

@@ -42,36 +42,36 @@ Owner: main (orchestrator) + coding-shared + debugging + deep-research
 
 ## Epic 5 — Feature Modules
 ### 5.1 Dashboard
-- [ ] System health tiles
-- [ ] Needs-attention feed
+- [x] System health tiles
+- [x] Needs-attention feed
 
 ### 5.2 Agents
-- [ ] Agent list/detail/status/model/heartbeat
-- [ ] Active session/work visibility
+- [x] Agent list/detail/status/model/heartbeat
+- [x] Active session/work visibility
 
 ### 5.3 Current Tasks + Usage
-- [ ] Active subagents/runs panel
-- [ ] Recent runs and state
-- [ ] Usage/tokens/cost panel
+- [x] Active subagents/runs panel
+- [x] Recent runs and state
+- [x] Usage/tokens/cost panel
 
 ### 5.4 Cron Jobs
-- [ ] Job list/detail
-- [ ] Run now / enable-disable / create-edit-delete
-- [ ] Safety confirms for destructive actions
+- [x] Job list/detail
+- [x] Run now / enable-disable / create-edit-delete
+- [x] Safety confirms for destructive actions
 
 ### 5.5 Skills
-- [ ] Installed/enabled/source/health view
-- [ ] Safe refresh controls
+- [x] Installed/enabled/source/health view
+- [x] Safe refresh controls
 
 ### 5.6 Config
-- [ ] Read-only config explorer
-- [ ] Safe config editor (schema validate + diff)
-- [ ] Rollback snapshot/apply flow
+- [x] Read-only config explorer
+- [x] Safe config editor (schema validate + diff)
+- [x] Rollback snapshot/apply flow
 
 ### 5.7 Projects
-- [ ] Project registry cards
-- [ ] Repo branch/latest commit/health
-- [ ] Links to related agents/tasks
+- [x] Project registry cards
+- [x] Repo branch/latest commit/health
+- [x] Links to related agents/tasks
 
 ## Epic 6 — Security Hardening
 - [ ] Least-privilege runtime checks

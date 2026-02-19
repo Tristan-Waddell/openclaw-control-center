@@ -1,7 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
-using ControlCenter.Application.Abstractions;
 using ControlCenter.Application.Services;
 using ControlCenter.Contracts;
 using Microsoft.Extensions.Logging;
@@ -10,9 +9,7 @@ namespace ControlCenter.UI;
 
 public partial class MainWindow : Window
 {
-    private readonly HealthService _healthService;
-    private readonly IGatewayApiClient _gatewayApiClient;
-    private readonly IGatewayCache _gatewayCache;
+    private readonly DashboardService _dashboardService;
     private readonly ILogger _logger;
 
     public ICommand NavigateDashboardCommand { get; }
@@ -20,14 +17,10 @@ public partial class MainWindow : Window
     public ICommand RefreshCommand { get; }
 
     public MainWindow(
-        HealthService healthService,
-        IGatewayApiClient gatewayApiClient,
-        IGatewayCache gatewayCache,
+        DashboardService dashboardService,
         ILogger logger)
     {
-        _healthService = healthService;
-        _gatewayApiClient = gatewayApiClient;
-        _gatewayCache = gatewayCache;
+        _dashboardService = dashboardService;
         _logger = logger;
 
         NavigateDashboardCommand = new RelayCommand(() => StatusText.Text = "Navigated to Dashboard");
@@ -50,37 +43,31 @@ public partial class MainWindow : Window
         {
             ShowState(loading: true);
 
-            var snapshot = await _healthService.GetSnapshotAsync();
-            var gatewayStatus = await _gatewayApiClient.GetStatusAsync();
-            var projects = await _gatewayApiClient.GetProjectsAsync();
+            var snapshot = await _dashboardService.GetSnapshotAsync();
 
-            await _gatewayCache.SaveStatusAsync(gatewayStatus);
-            await _gatewayCache.SaveProjectsAsync(projects);
+            TopBarClockText.Text = snapshot.CapturedAtUtc.ToString("u");
+            HealthTilesItems.ItemsSource = new ObservableCollection<HealthTileDto>(snapshot.Tiles);
+            NeedsAttentionGrid.ItemsSource = new ObservableCollection<NeedsAttentionItemDto>(snapshot.NeedsAttention);
 
-            GatewayStatusText.Text = snapshot.Status;
-            RealtimeStatusText.Text = "Connected (scaffold)";
-            CacheStatusText.Text = "SQLite ready";
-            TopBarClockText.Text = gatewayStatus.ServerTimeUtc.ToString("u");
-
-            ProjectsGrid.ItemsSource = new ObservableCollection<ProjectSummaryDto>(projects);
-
-            if (projects.Count == 0)
+            if (snapshot.Tiles.Count == 0)
             {
                 ShowState(empty: true);
-                StatusText.Text = "Loaded: no projects returned.";
+                StatusText.Text = "Loaded: no dashboard data.";
             }
             else
             {
                 ShowState(content: true);
-                StatusText.Text = $"Loaded {projects.Count} project(s).";
+                StatusText.Text = snapshot.NeedsAttention.Count == 0
+                    ? "Dashboard healthy."
+                    : $"{snapshot.NeedsAttention.Count} item(s) need attention.";
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to load Control Center shell state.");
+            _logger.LogError(ex, "Failed to load dashboard state.");
             ErrorText.Text = ex.Message;
             ShowState(error: true);
-            StatusText.Text = "Platform status: degraded";
+            StatusText.Text = "Dashboard status: degraded";
         }
     }
 

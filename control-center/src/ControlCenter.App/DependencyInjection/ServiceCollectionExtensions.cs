@@ -25,6 +25,15 @@ public static class ServiceCollectionExtensions
             profile.SecretStoreScope);
 
         services.AddScoped<HealthService>();
+        services.AddScoped<DashboardService>();
+        services.AddScoped<AgentsService>();
+        services.AddScoped<TasksUsageService>();
+        services.AddScoped<CronService>();
+        services.AddScoped<SkillsService>();
+        services.AddScoped<ConfigService>();
+        services.AddScoped<ProjectsService>();
+        services.AddScoped<SecurityHardeningService>();
+        services.AddScoped<ReliabilityService>();
         services.AddScoped<RealtimeSyncService>();
         return services;
     }

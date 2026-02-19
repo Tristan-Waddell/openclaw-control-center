@@ -36,6 +36,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IEventJournal>(_ => new SqliteEventJournal(sqliteConnectionString));
         services.AddSingleton<IHealthRepository>(_ => new SqliteHealthRepository(sqliteConnectionString));
         services.AddSingleton<ISecretStore>(_ => new DpapiSecretStore(secretStoreScope));
+        services.AddSingleton<IAuditTrail>(_ => new SqliteAuditTrail(sqliteConnectionString));
 
         return services;
     }
