@@ -9,7 +9,7 @@ public sealed class SqliteGatewayCacheTests
     public async Task SaveAndRead_RoundTripsStatusAndProjects()
     {
         var path = Path.Combine(Path.GetTempPath(), $"control-center-{Guid.NewGuid():N}.db");
-        var cs = $"Data Source={path}";
+        var cs = $"Data Source={path};Pooling=False";
         var cache = new SqliteGatewayCache(cs);
 
         var status = new GatewayStatusDto("1.0.0", "Development", DateTimeOffset.UtcNow);

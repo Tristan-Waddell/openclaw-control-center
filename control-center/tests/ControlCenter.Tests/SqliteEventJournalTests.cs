@@ -9,7 +9,7 @@ public sealed class SqliteEventJournalTests
     public async Task AppendAsync_DeduplicatesByEventId()
     {
         var path = Path.Combine(Path.GetTempPath(), $"control-center-{Guid.NewGuid():N}.db");
-        var cs = $"Data Source={path}";
+        var cs = $"Data Source={path};Pooling=False";
         var journal = new SqliteEventJournal(cs);
 
         var evt = new RealtimeEventEnvelopeDto("evt-1", "agent.updated", DateTimeOffset.UtcNow, 1, "{}", "corr-1");
