@@ -17,9 +17,9 @@ Owner: main (orchestrator) + coding-shared + debugging + deep-research
 
 ## Epic 1 — Contracts First
 - [x] Define DTOs for Agents / Config / Cron / Skills / Tasks+Usage / Projects
-- [ ] Define realtime event envelope + versioning rules
-- [ ] Define standard error model (code/message/details/retryable/correlationId)
-- [ ] Write contract compatibility policy for v1
+- [x] Define realtime event envelope + versioning rules
+- [x] Define standard error model (code/message/details/retryable/correlationId)
+- [x] Write contract compatibility policy for v1
 
 ## Epic 2 — Solution Skeleton
 - [ ] Create modules: App / UI / Application / Domain / Infrastructure / Contracts / Tests
