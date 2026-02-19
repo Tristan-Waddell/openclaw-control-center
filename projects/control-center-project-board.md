@@ -74,26 +74,26 @@ Owner: main (orchestrator) + coding-shared + debugging + deep-research
 - [x] Links to related agents/tasks
 
 ## Epic 6 — Security Hardening
-- [ ] Least-privilege runtime checks
-- [ ] Sensitive-action re-auth controls
-- [ ] Signed update verification path
-- [ ] Full mutation audit trail
-- [ ] Log/diagnostic secret redaction
+- [x] Least-privilege runtime checks
+- [x] Sensitive-action re-auth controls
+- [x] Signed update verification path
+- [x] Full mutation audit trail
+- [x] Log/diagnostic secret redaction
 
 ## Epic 7 — Reliability Hardening
-- [ ] Idempotency keys for mutating commands
-- [ ] Circuit breakers + retry/backoff policies
-- [ ] Degraded/offline UX behavior
-- [ ] Crash recovery/integrity checks for cache
-- [ ] Reconnect reconciliation tests
+- [x] Idempotency keys for mutating commands
+- [x] Circuit breakers + retry/backoff policies
+- [x] Degraded/offline UX behavior
+- [x] Crash recovery/integrity checks for cache
+- [x] Reconnect reconciliation tests
 
 ## Epic 8 — Test Gates
-- [ ] Unit tests (domain/app rules)
-- [ ] Integration tests (API/realtime/storage/auth)
-- [ ] Contract tests (gateway endpoints/events)
-- [ ] Fault injection (restart/offline/token-expiry/disk pressure)
-- [ ] Security scans + signed artifact validation
-- [ ] UI smoke tests for core routes
+- [x] Unit tests (domain/app rules)
+- [x] Integration tests (API/realtime/storage/auth)
+- [x] Contract tests (gateway endpoints/events)
+- [x] Fault injection (restart/offline/token-expiry/disk pressure)
+- [x] Security scans + signed artifact validation
+- [x] UI smoke tests for core routes
 
 ## Epic 9 — Packaging + Ops Readiness
 - [ ] Signed Windows installer artifacts

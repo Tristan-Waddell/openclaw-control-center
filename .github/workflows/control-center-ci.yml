@@ -33,3 +33,16 @@ jobs:
 
       - name: Test
         run: dotnet test ControlCenter.sln --configuration Release --no-build
+
+      - name: Security scan (NuGet vulnerabilities)
+        run: dotnet list ControlCenter.sln package --vulnerable --include-transitive
+
+      - name: Validate signed artifact (when provided)
+        shell: pwsh
+        run: |
+          if ($env:CONTROL_CENTER_SIGNED_ARTIFACT) {
+            ./scripts/validate-signed-artifacts.ps1 -Path $env:CONTROL_CENTER_SIGNED_ARTIFACT
+          }
+          else {
+            Write-Host "CONTROL_CENTER_SIGNED_ARTIFACT not set; skipping signature validation."
+          }
