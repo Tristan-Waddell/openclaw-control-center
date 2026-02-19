@@ -83,6 +83,7 @@ Use deterministic routing for every request.
   - `➡️ main → <agent-id>` (exact prompt sent)
   - `⬅️ <agent-id> → main` (exact reply received)
 - This applies to foreground and background runs; post kickoff immediately and completion output when available.
+- Discord targeting format is strict: use `target:"channel:<id>"` (or raw channel id) only. Never use `#name` or `<#id>` mention syntax with the `message` tool.
 
 ## Subagent transparency (required)
 For every delegated task, maintain extremely high visibility in Discord:
