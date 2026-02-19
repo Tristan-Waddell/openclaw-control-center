@@ -1,0 +1,27 @@
+<Window x:Class="ControlCenter.UI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+        mc:Ignorable="d"
+        Title="Control Center"
+        Height="680"
+        Width="1100">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="8" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Name="StatusText"
+                   FontSize="14"
+                   FontWeight="SemiBold"
+                   Text="Initializing..." />
+
+        <wv2:WebView2 Grid.Row="2"
+                      Name="ShellView"
+                      Source="https://example.com" />
+    </Grid>
+</Window>

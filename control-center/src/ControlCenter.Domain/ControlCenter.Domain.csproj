@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>ControlCenter.Domain</AssemblyName>
+    <RootNamespace>ControlCenter.Domain</RootNamespace>
+  </PropertyGroup>
+</Project>

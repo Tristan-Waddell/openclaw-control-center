@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>ControlCenter.Application</AssemblyName>
+    <RootNamespace>ControlCenter.Application</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ControlCenter.Domain\ControlCenter.Domain.csproj" />
+    <ProjectReference Include="..\ControlCenter.Contracts\ControlCenter.Contracts.csproj" />
+  </ItemGroup>
+</Project>

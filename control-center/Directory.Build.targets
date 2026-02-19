@@ -1,0 +1,40 @@
+<Project>
+  <Target Name="EnforceArchitectureBoundaries" BeforeTargets="ResolveReferences">
+    <ItemGroup>
+      <IllegalReference Include="@(ProjectReference)"
+                        Condition="
+                          (
+                            '$(MSBuildProjectName)' == 'ControlCenter.Domain' and
+                            $([System.String]::Copy('%(ProjectReference.Identity)').Contains('ControlCenter.Application'))
+                          ) or
+                          (
+                            '$(MSBuildProjectName)' == 'ControlCenter.Domain' and
+                            $([System.String]::Copy('%(ProjectReference.Identity)').Contains('ControlCenter.Infrastructure'))
+                          ) or
+                          (
+                            '$(MSBuildProjectName)' == 'ControlCenter.Domain' and
+                            $([System.String]::Copy('%(ProjectReference.Identity)').Contains('ControlCenter.UI'))
+                          ) or
+                          (
+                            '$(MSBuildProjectName)' == 'ControlCenter.Application' and
+                            $([System.String]::Copy('%(ProjectReference.Identity)').Contains('ControlCenter.UI'))
+                          ) or
+                          (
+                            '$(MSBuildProjectName)' == 'ControlCenter.Application' and
+                            $([System.String]::Copy('%(ProjectReference.Identity)').Contains('ControlCenter.Infrastructure'))
+                          ) or
+                          (
+                            '$(MSBuildProjectName)' == 'ControlCenter.Infrastructure' and
+                            $([System.String]::Copy('%(ProjectReference.Identity)').Contains('ControlCenter.UI'))
+                          ) or
+                          (
+                            '$(MSBuildProjectName)' == 'ControlCenter.Infrastructure' and
+                            $([System.String]::Copy('%(ProjectReference.Identity)').Contains('ControlCenter.App'))
+                          )
+                        " />
+    </ItemGroup>
+
+    <Error Condition="@(IllegalReference) != ''"
+           Text="Architecture boundary violation in $(MSBuildProjectName). Illegal project reference(s): @(IllegalReference)" />
+  </Target>
+</Project>

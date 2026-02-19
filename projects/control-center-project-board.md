@@ -22,10 +22,10 @@ Owner: main (orchestrator) + coding-shared + debugging + deep-research
 - [x] Write contract compatibility policy for v1
 
 ## Epic 2 — Solution Skeleton
-- [ ] Create modules: App / UI / Application / Domain / Infrastructure / Contracts / Tests
-- [ ] Add dependency rules and enforce in CI/build
-- [ ] Wire DI container and environment profiles
-- [ ] Add baseline logging plumbing
+- [x] Create modules: App / UI / Application / Domain / Infrastructure / Contracts / Tests
+- [x] Add dependency rules and enforce in CI/build
+- [x] Wire DI container and environment profiles
+- [x] Add baseline logging plumbing
 
 ## Epic 3 — Core Platform Services
 - [ ] Build typed Gateway API client
