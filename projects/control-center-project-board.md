@@ -1,6 +1,6 @@
 # Control Center Project Board (Windows-only)
 
-Status: **PAUSED** (waiting for Tristan start signal)
+Status: **ACTIVE** (resumed by Tristan)
 Owner: main (orchestrator) + coding-shared + debugging + deep-research
 
 ## Control Commands (from Tristan)
@@ -10,13 +10,13 @@ Owner: main (orchestrator) + coding-shared + debugging + deep-research
 ---
 
 ## Epic 0 — Decision Lock
-- [ ] Confirm primary stack: .NET (WPF shell) + WebView2 + SQLite
-- [ ] Keep Tauri as documented fallback only
-- [ ] Freeze architecture boundaries (UI → App → Domain → Infra)
-- [ ] Freeze security baseline (no plaintext secrets, audited mutations)
+- [x] Confirm primary stack: .NET (WPF shell) + WebView2 + SQLite
+- [x] Keep Tauri as documented fallback only
+- [x] Freeze architecture boundaries (UI → App → Domain → Infra)
+- [x] Freeze security baseline (no plaintext secrets, audited mutations)
 
 ## Epic 1 — Contracts First
-- [ ] Define DTOs for Agents / Config / Cron / Skills / Tasks+Usage / Projects
+- [x] Define DTOs for Agents / Config / Cron / Skills / Tasks+Usage / Projects
 - [ ] Define realtime event envelope + versioning rules
 - [ ] Define standard error model (code/message/details/retryable/correlationId)
 - [ ] Write contract compatibility policy for v1
