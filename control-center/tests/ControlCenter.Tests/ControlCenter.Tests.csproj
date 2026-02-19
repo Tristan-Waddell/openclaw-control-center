@@ -13,5 +13,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\ControlCenter.Domain\ControlCenter.Domain.csproj" />
+    <ProjectReference Include="..\..\src\ControlCenter.Application\ControlCenter.Application.csproj" />
+    <ProjectReference Include="..\..\src\ControlCenter.Infrastructure\ControlCenter.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\ControlCenter.Contracts\ControlCenter.Contracts.csproj" />
   </ItemGroup>
 </Project>

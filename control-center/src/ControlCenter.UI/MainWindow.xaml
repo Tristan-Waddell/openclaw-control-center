@@ -3,25 +3,144 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         mc:Ignorable="d"
         Title="Control Center"
-        Height="680"
-        Width="1100">
-    <Grid Margin="12">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="8" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+        Height="760"
+        Width="1240"
+        Background="{StaticResource CC.BackgroundBrush}">
+    <Window.InputBindings>
+        <KeyBinding Key="D1" Modifiers="Control" Command="{Binding NavigateDashboardCommand}" />
+        <KeyBinding Key="D2" Modifiers="Control" Command="{Binding NavigateAgentsCommand}" />
+        <KeyBinding Key="F5" Command="{Binding RefreshCommand}" />
+    </Window.InputBindings>
 
-        <TextBlock Name="StatusText"
-                   FontSize="14"
-                   FontWeight="SemiBold"
-                   Text="Initializing..." />
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
 
-        <wv2:WebView2 Grid.Row="2"
-                      Name="ShellView"
-                      Source="https://example.com" />
+        <Border Grid.Column="0" Background="{StaticResource CC.SurfaceBrush}" Padding="12">
+            <StackPanel>
+                <TextBlock Text="Control Center"
+                           Foreground="{StaticResource CC.TextBrush}"
+                           FontWeight="Bold"
+                           FontSize="18"
+                           Margin="0,0,0,16"
+                           AutomationProperties.Name="Application title" />
+                <Button Style="{StaticResource CC.NavButton}" Content="Dashboard" Name="DashboardButton" />
+                <Button Style="{StaticResource CC.NavButton}" Content="Agents" Name="AgentsButton" />
+                <Button Style="{StaticResource CC.NavButton}" Content="Projects" Name="ProjectsButton" />
+                <Button Style="{StaticResource CC.NavButton}" Content="Settings" Name="SettingsButton" />
+            </StackPanel>
+        </Border>
+
+        <Grid Grid.Column="1" Margin="12">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Border Background="{StaticResource CC.SurfaceBrush}" Padding="12" CornerRadius="8" Margin="0,0,0,12">
+                <DockPanel>
+                    <TextBlock Text="Core Platform Services"
+                               Style="{StaticResource CC.Title}"
+                               DockPanel.Dock="Left"
+                               AutomationProperties.Name="Top bar title" />
+                    <TextBlock Name="TopBarClockText"
+                               Style="{StaticResource CC.Body}"
+                               DockPanel.Dock="Right"
+                               HorizontalAlignment="Right"
+                               AutomationProperties.Name="Server time" />
+                </DockPanel>
+            </Border>
+
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <StackPanel Orientation="Horizontal">
+                    <Border Style="{StaticResource CC.Card}" Width="250">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource CC.Title}" Text="Gateway" />
+                            <TextBlock Name="GatewayStatusText" Style="{StaticResource CC.Body}" Text="Unknown" />
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource CC.Card}" Width="250">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource CC.Title}" Text="Realtime" />
+                            <TextBlock Name="RealtimeStatusText" Style="{StaticResource CC.Body}" Text="Disconnected" />
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource CC.Card}" Width="250">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource CC.Title}" Text="Cache" />
+                            <TextBlock Name="CacheStatusText" Style="{StaticResource CC.Body}" Text="Not Initialized" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <Grid Grid.Row="1">
+                    <Grid Name="LoadingState" Visibility="Visible">
+                        <TextBlock Text="Loading dashboard..."
+                                   Style="{StaticResource CC.Body}"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Center"
+                                   AutomationProperties.Name="Loading state" />
+                    </Grid>
+
+                    <Grid Name="EmptyState" Visibility="Collapsed">
+                        <TextBlock Text="No data available yet."
+                                   Style="{StaticResource CC.Body}"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Center"
+                                   AutomationProperties.Name="Empty state" />
+                    </Grid>
+
+                    <Grid Name="ErrorState" Visibility="Collapsed">
+                        <TextBlock Name="ErrorText"
+                                   Text="Failed to load data"
+                                   Foreground="Tomato"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Center"
+                                   AutomationProperties.Name="Error state" />
+                    </Grid>
+
+                    <Border Name="ContentState" Visibility="Collapsed" Style="{StaticResource CC.Card}" Margin="0">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="Projects" Style="{StaticResource CC.Title}" Margin="0,0,0,8" />
+                            <DataGrid Grid.Row="1"
+                                      Name="ProjectsGrid"
+                                      AutoGenerateColumns="False"
+                                      IsReadOnly="True"
+                                      HeadersVisibility="Column"
+                                      Background="{StaticResource CC.SurfaceAltBrush}"
+                                      Foreground="{StaticResource CC.TextBrush}">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="2*" />
+                                    <DataGridTextColumn Header="Branch" Binding="{Binding Branch}" Width="*" />
+                                    <DataGridTextColumn Header="Commit" Binding="{Binding CommitSha}" Width="*" />
+                                    <DataGridTextColumn Header="Health" Binding="{Binding Health}" Width="*" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Grid>
+
+            <Border Grid.Row="2" Background="{StaticResource CC.SurfaceBrush}" Padding="8" CornerRadius="8" Margin="0,12,0,0">
+                <TextBlock Name="StatusText"
+                           Style="{StaticResource CC.Body}"
+                           AutomationProperties.Name="Status strip text"
+                           Text="Ready" />
+            </Border>
+        </Grid>
     </Grid>
 </Window>

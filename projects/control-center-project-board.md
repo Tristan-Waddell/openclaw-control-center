@@ -28,17 +28,17 @@ Owner: main (orchestrator) + coding-shared + debugging + deep-research
 - [x] Add baseline logging plumbing
 
 ## Epic 3 — Core Platform Services
-- [ ] Build typed Gateway API client
-- [ ] Build realtime client (WS primary, SSE fallback)
-- [ ] Build SQLite cache + event journal
-- [ ] Build Windows secret storage adapter (Credential Manager/DPAPI)
-- [ ] Build reconnect/resubscribe + dedupe pipeline
+- [x] Build typed Gateway API client
+- [x] Build realtime client (WS primary, SSE fallback)
+- [x] Build SQLite cache + event journal
+- [x] Build Windows secret storage adapter (Credential Manager/DPAPI)
+- [x] Build reconnect/resubscribe + dedupe pipeline
 
 ## Epic 4 — UI Shell + Design System
-- [ ] Build shell (left nav, top bar, status strip)
-- [ ] Build shared primitives (cards/tables/drawers/toasts/dialogs)
-- [ ] Standardize loading/empty/error states
-- [ ] Add keyboard/accessibility baseline
+- [x] Build shell (left nav, top bar, status strip)
+- [x] Build shared primitives (cards/tables/drawers/toasts/dialogs)
+- [x] Standardize loading/empty/error states
+- [x] Add keyboard/accessibility baseline
 
 ## Epic 5 — Feature Modules
 ### 5.1 Dashboard

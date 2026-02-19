@@ -1,5 +1,6 @@
 using System.Windows;
 using ControlCenter.App;
+using ControlCenter.Application.Abstractions;
 using ControlCenter.Application.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -21,7 +22,9 @@ public partial class App : Application
         logger.LogInformation("Starting Control Center UI in {Environment}.", environment);
 
         var healthService = _serviceProvider.GetRequiredService<HealthService>();
-        var window = new MainWindow(healthService, logger);
+        var gatewayApiClient = _serviceProvider.GetRequiredService<IGatewayApiClient>();
+        var gatewayCache = _serviceProvider.GetRequiredService<IGatewayCache>();
+        var window = new MainWindow(healthService, gatewayApiClient, gatewayCache, logger);
         window.Show();
     }
 

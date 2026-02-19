@@ -1,10 +1,8 @@
 using ControlCenter.App.Configuration;
-using ControlCenter.Application.Abstractions;
 using ControlCenter.Application.Services;
-using ControlCenter.Infrastructure.Persistence;
+using ControlCenter.Infrastructure.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace ControlCenter.App.DependencyInjection;
 
@@ -16,13 +14,18 @@ public static class ServiceCollectionExtensions
             .Bind(configuration.GetSection(EnvironmentProfile.SectionName))
             .ValidateDataAnnotations();
 
-        services.AddSingleton<IHealthRepository>(provider =>
-        {
-            var profile = provider.GetRequiredService<IOptions<EnvironmentProfile>>().Value;
-            return new SqliteHealthRepository(profile.SqliteConnectionString);
-        });
+        var profile = new EnvironmentProfile();
+        configuration.GetSection(EnvironmentProfile.SectionName).Bind(profile);
+
+        services.AddInfrastructure(
+            profile.SqliteConnectionString,
+            profile.GatewayBaseUrl,
+            profile.RealtimeWebSocketUrl,
+            profile.RealtimeSseUrl,
+            profile.SecretStoreScope);
 
         services.AddScoped<HealthService>();
+        services.AddScoped<RealtimeSyncService>();
         return services;
     }
 }
