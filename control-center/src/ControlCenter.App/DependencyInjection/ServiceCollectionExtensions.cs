@@ -20,6 +20,7 @@ public static class ServiceCollectionExtensions
         services.AddInfrastructure(
             profile.SqliteConnectionString,
             profile.GatewayBaseUrl,
+            profile.GatewayToken,
             profile.RealtimeWebSocketUrl,
             profile.RealtimeSseUrl,
             profile.SecretStoreScope);

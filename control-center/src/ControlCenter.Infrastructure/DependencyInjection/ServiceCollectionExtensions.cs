@@ -13,14 +13,15 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         string sqliteConnectionString,
         string gatewayBaseUrl,
+        string? gatewayToken,
         string realtimeWebSocketUrl,
         string realtimeSseUrl,
         string secretStoreScope)
     {
-        services.AddHttpClient<IGatewayApiClient, HttpGatewayApiClient>(client =>
-        {
-            client.BaseAddress = new Uri(gatewayBaseUrl, UriKind.Absolute);
-        });
+        services.AddSingleton<IGatewayConnectionContext>(_ =>
+            new GatewayConnectionContext(new GatewayConnectionOptions(gatewayBaseUrl, gatewayToken)));
+
+        services.AddHttpClient<IGatewayApiClient, HttpGatewayApiClient>();
 
         services.AddHttpClient("Realtime");
         services.AddSingleton<IRealtimeClient>(provider =>
