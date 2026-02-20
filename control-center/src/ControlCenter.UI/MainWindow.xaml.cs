@@ -85,8 +85,17 @@ public partial class MainWindow : Window
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to load dashboard state.");
+            var failureKind = ConnectionErrorFormatter.Classify(ex);
             ErrorText.Text = ConnectionErrorFormatter.ToUserMessage(ex, _connectionContext.Current.BaseUrl);
             ShowState(error: true);
+
+            if (failureKind == ConnectionFailureKind.IncompatibleApi)
+            {
+                StatusText.Text = "Dashboard status: gateway reachable, API incompatible";
+                SetConnectionState("Incompatible API", connected: false);
+                return;
+            }
+
             StatusText.Text = "Dashboard status: disconnected";
             SetConnectionState("Disconnected", connected: false);
         }

@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text.Json;
 using ControlCenter.Application.Abstractions;
 using ControlCenter.Contracts;
 
@@ -20,7 +21,7 @@ public sealed class HttpGatewayApiClient : IGatewayApiClient
     public async Task<GatewayStatusDto> GetStatusAsync(CancellationToken cancellationToken = default)
     {
         return await SendAndReadAsync<GatewayStatusDto>(HttpMethod.Get, "api/v1/status", cancellationToken)
-            ?? throw new InvalidOperationException("Gateway returned empty status payload.");
+            ?? throw new GatewayApiCompatibilityException("Gateway returned an incompatible status payload.");
     }
 
     public async Task<IReadOnlyList<AgentSummaryDto>> GetAgentsAsync(CancellationToken cancellationToken = default)
@@ -55,7 +56,7 @@ public sealed class HttpGatewayApiClient : IGatewayApiClient
         }
 
         response.EnsureSuccessStatusCode();
-        return await response.Content.ReadFromJsonAsync<T>(cancellationToken: cancellationToken);
+        return await ReadJsonContentAsync<T>(response, cancellationToken);
     }
 
     private async Task<T?> SendAndReadAsync<T>(HttpMethod method, string relativeUrl, CancellationToken cancellationToken)
@@ -63,8 +64,29 @@ public sealed class HttpGatewayApiClient : IGatewayApiClient
         using var request = BuildRequest(method, relativeUrl);
         using var response = await _httpClient.SendAsync(request, cancellationToken);
         response.EnsureSuccessStatusCode();
-        return await response.Content.ReadFromJsonAsync<T>(cancellationToken: cancellationToken);
+        return await ReadJsonContentAsync<T>(response, cancellationToken);
     }
+
+    private static async Task<T?> ReadJsonContentAsync<T>(HttpResponseMessage response, CancellationToken cancellationToken)
+    {
+        var mediaType = response.Content.Headers.ContentType?.MediaType;
+        if (LooksLikeHtmlMediaType(mediaType))
+        {
+            throw new GatewayApiCompatibilityException("Gateway returned HTML instead of dashboard API JSON.");
+        }
+
+        try
+        {
+            return await response.Content.ReadFromJsonAsync<T>(cancellationToken: cancellationToken);
+        }
+        catch (Exception ex) when (ex is NotSupportedException || ex is JsonException)
+        {
+            throw new GatewayApiCompatibilityException("Gateway returned an incompatible dashboard API response.", ex);
+        }
+    }
+
+    private static bool LooksLikeHtmlMediaType(string? mediaType)
+        => !string.IsNullOrWhiteSpace(mediaType) && mediaType.Contains("html", StringComparison.OrdinalIgnoreCase);
 
     private HttpRequestMessage BuildRequest(HttpMethod method, string relativeUrl)
     {
