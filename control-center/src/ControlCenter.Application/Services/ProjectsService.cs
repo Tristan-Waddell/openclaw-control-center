@@ -12,6 +12,15 @@ public sealed class ProjectsService
         _gatewayApiClient = gatewayApiClient;
     }
 
-    public Task<IReadOnlyList<ProjectSummaryDto>> GetProjectsAsync(CancellationToken cancellationToken = default)
-        => _gatewayApiClient.GetProjectsAsync(cancellationToken);
+    public async Task<IReadOnlyList<ProjectSummaryDto>> GetProjectsAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            return await _gatewayApiClient.GetProjectsAsync(cancellationToken);
+        }
+        catch (GatewayApiCompatibilityException)
+        {
+            return [];
+        }
+    }
 }

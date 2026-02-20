@@ -12,8 +12,17 @@ public sealed class CronService
         _gatewayApiClient = gatewayApiClient;
     }
 
-    public Task<IReadOnlyList<CronJobDto>> GetJobsAsync(CancellationToken cancellationToken = default)
-        => _gatewayApiClient.GetCronJobsAsync(cancellationToken);
+    public async Task<IReadOnlyList<CronJobDto>> GetJobsAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            return await _gatewayApiClient.GetCronJobsAsync(cancellationToken);
+        }
+        catch (GatewayApiCompatibilityException)
+        {
+            return [];
+        }
+    }
 
     public string BuildSafetyConfirmation(string action, string jobName)
         => $"Confirm {action} for cron job '{jobName}'";

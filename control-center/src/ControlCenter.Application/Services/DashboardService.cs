@@ -19,8 +19,8 @@ public sealed class DashboardService
     public async Task<DashboardSnapshotDto> GetSnapshotAsync(CancellationToken cancellationToken = default)
     {
         var status = await _gatewayApiClient.GetStatusAsync(cancellationToken);
-        var agents = await _gatewayApiClient.GetAgentsAsync(cancellationToken);
-        var projects = await _gatewayApiClient.GetProjectsAsync(cancellationToken);
+        var agents = await ReadOptionalAsync(() => _gatewayApiClient.GetAgentsAsync(cancellationToken));
+        var projects = await ReadOptionalAsync(() => _gatewayApiClient.GetProjectsAsync(cancellationToken));
 
         await _gatewayCache.SaveStatusAsync(status, cancellationToken);
         await _gatewayCache.SaveAgentsAsync(agents, cancellationToken);
@@ -78,5 +78,17 @@ public sealed class DashboardService
         }
 
         return now - agent.LastHeartbeatUtc <= StaleHeartbeatThreshold;
+    }
+
+    private static async Task<IReadOnlyList<T>> ReadOptionalAsync<T>(Func<Task<IReadOnlyList<T>>> fetch)
+    {
+        try
+        {
+            return await fetch();
+        }
+        catch (GatewayApiCompatibilityException)
+        {
+            return [];
+        }
     }
 }

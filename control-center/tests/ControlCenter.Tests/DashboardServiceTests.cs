@@ -32,25 +32,50 @@ public sealed class DashboardServiceTests
         Assert.Contains(snapshot.NeedsAttention, item => item.Category == "project" && item.Title == "Project Broken");
     }
 
+    [Fact]
+    public async Task GetSnapshotAsync_ProjectApiUnsupported_StillReturnsSnapshot()
+    {
+        var now = DateTimeOffset.UtcNow;
+        var apiClient = new StubGatewayApiClient(
+            new GatewayStatusDto("1.2.0", "Development", now),
+            [new AgentSummaryDto("a1", "Agent One", "online", now)],
+            [new ProjectSummaryDto("p1", "Project", "main", "abc123", "ok")],
+            throwProjectsCompatibility: true);
+
+        var cache = new InMemoryGatewayCache();
+        var service = new DashboardService(apiClient, cache);
+
+        var snapshot = await service.GetSnapshotAsync();
+
+        Assert.NotEmpty(snapshot.Tiles);
+        Assert.DoesNotContain(snapshot.NeedsAttention, item => item.Category == "project");
+    }
+
     private sealed class StubGatewayApiClient : IGatewayApiClient
     {
         private readonly GatewayStatusDto _status;
         private readonly IReadOnlyList<AgentSummaryDto> _agents;
         private readonly IReadOnlyList<ProjectSummaryDto> _projects;
+        private readonly bool _throwProjectsCompatibility;
 
         public StubGatewayApiClient(
             GatewayStatusDto status,
             IReadOnlyList<AgentSummaryDto> agents,
-            IReadOnlyList<ProjectSummaryDto> projects)
+            IReadOnlyList<ProjectSummaryDto> projects,
+            bool throwProjectsCompatibility = false)
         {
             _status = status;
             _agents = agents;
             _projects = projects;
+            _throwProjectsCompatibility = throwProjectsCompatibility;
         }
 
         public Task<GatewayStatusDto> GetStatusAsync(CancellationToken cancellationToken = default) => Task.FromResult(_status);
         public Task<IReadOnlyList<AgentSummaryDto>> GetAgentsAsync(CancellationToken cancellationToken = default) => Task.FromResult(_agents);
-        public Task<IReadOnlyList<ProjectSummaryDto>> GetProjectsAsync(CancellationToken cancellationToken = default) => Task.FromResult(_projects);
+        public Task<IReadOnlyList<ProjectSummaryDto>> GetProjectsAsync(CancellationToken cancellationToken = default)
+            => _throwProjectsCompatibility
+                ? throw new GatewayApiCompatibilityException("projects unsupported")
+                : Task.FromResult(_projects);
         public Task<IReadOnlyList<TaskRunDto>> GetActiveRunsAsync(CancellationToken cancellationToken = default) => Task.FromResult<IReadOnlyList<TaskRunDto>>([]);
         public Task<UsageSummaryDto> GetUsageSummaryAsync(CancellationToken cancellationToken = default) => Task.FromResult(new UsageSummaryDto(0, 0, 0m));
         public Task<IReadOnlyList<CronJobDto>> GetCronJobsAsync(CancellationToken cancellationToken = default) => Task.FromResult<IReadOnlyList<CronJobDto>>([]);

@@ -12,6 +12,15 @@ public sealed class SkillsService
         _gatewayApiClient = gatewayApiClient;
     }
 
-    public Task<IReadOnlyList<SkillDto>> GetSkillsAsync(CancellationToken cancellationToken = default)
-        => _gatewayApiClient.GetSkillsAsync(cancellationToken);
+    public async Task<IReadOnlyList<SkillDto>> GetSkillsAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            return await _gatewayApiClient.GetSkillsAsync(cancellationToken);
+        }
+        catch (GatewayApiCompatibilityException)
+        {
+            return [];
+        }
+    }
 }

@@ -16,8 +16,15 @@ public sealed class AgentsService
 
     public async Task<IReadOnlyList<AgentSummaryDto>> GetAgentsAsync(CancellationToken cancellationToken = default)
     {
-        var agents = await _gatewayApiClient.GetAgentsAsync(cancellationToken);
-        await _gatewayCache.SaveAgentsAsync(agents, cancellationToken);
-        return agents;
+        try
+        {
+            var agents = await _gatewayApiClient.GetAgentsAsync(cancellationToken);
+            await _gatewayCache.SaveAgentsAsync(agents, cancellationToken);
+            return agents;
+        }
+        catch (GatewayApiCompatibilityException)
+        {
+            return [];
+        }
     }
 }

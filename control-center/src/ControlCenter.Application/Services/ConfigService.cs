@@ -14,8 +14,17 @@ public sealed class ConfigService
         _gatewayApiClient = gatewayApiClient;
     }
 
-    public Task<IReadOnlyList<ConfigEntryDto>> GetEntriesAsync(CancellationToken cancellationToken = default)
-        => _gatewayApiClient.GetConfigEntriesAsync(cancellationToken);
+    public async Task<IReadOnlyList<ConfigEntryDto>> GetEntriesAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            return await _gatewayApiClient.GetConfigEntriesAsync(cancellationToken);
+        }
+        catch (GatewayApiCompatibilityException)
+        {
+            return [];
+        }
+    }
 
     public bool ValidateEditorPayload(string json) => !string.IsNullOrWhiteSpace(json) && IsJson(json);
 

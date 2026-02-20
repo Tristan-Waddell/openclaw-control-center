@@ -14,11 +14,29 @@ public sealed class TasksUsageService
         _eventJournal = eventJournal;
     }
 
-    public Task<IReadOnlyList<TaskRunDto>> GetActiveRunsAsync(CancellationToken cancellationToken = default)
-        => _gatewayApiClient.GetActiveRunsAsync(cancellationToken);
+    public async Task<IReadOnlyList<TaskRunDto>> GetActiveRunsAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            return await _gatewayApiClient.GetActiveRunsAsync(cancellationToken);
+        }
+        catch (GatewayApiCompatibilityException)
+        {
+            return [];
+        }
+    }
 
-    public Task<UsageSummaryDto> GetUsageSummaryAsync(CancellationToken cancellationToken = default)
-        => _gatewayApiClient.GetUsageSummaryAsync(cancellationToken);
+    public async Task<UsageSummaryDto> GetUsageSummaryAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            return await _gatewayApiClient.GetUsageSummaryAsync(cancellationToken);
+        }
+        catch (GatewayApiCompatibilityException)
+        {
+            return new UsageSummaryDto(0, 0, 0m);
+        }
+    }
 
     public Task<IReadOnlyList<RealtimeEventEnvelopeDto>> GetRecentRunsAsync(int limit = 25, CancellationToken cancellationToken = default)
         => _eventJournal.ReadRecentAsync(limit, cancellationToken);
