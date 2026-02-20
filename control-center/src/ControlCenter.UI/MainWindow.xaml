@@ -22,12 +22,7 @@
 
         <Border Grid.Column="0" Background="{StaticResource CC.SurfaceBrush}" Padding="12">
             <StackPanel>
-                <TextBlock Text="Control Center"
-                           Foreground="{StaticResource CC.TextBrush}"
-                           FontWeight="Bold"
-                           FontSize="18"
-                           Margin="0,0,0,16"
-                           AutomationProperties.Name="Application title" />
+                <TextBlock Text="Control Center" Foreground="{StaticResource CC.TextBrush}" FontWeight="Bold" FontSize="18" Margin="0,0,0,16" />
                 <Button Style="{StaticResource CC.NavButton}" Content="Dashboard" Name="DashboardButton" />
                 <Button Style="{StaticResource CC.NavButton}" Content="Agents" Name="AgentsButton" />
                 <Button Style="{StaticResource CC.NavButton}" Content="Projects" Name="ProjectsButton" />
@@ -43,46 +38,46 @@
             </Grid.RowDefinitions>
 
             <Border Background="{StaticResource CC.SurfaceBrush}" Padding="12" CornerRadius="8" Margin="0,0,0,12">
-                <DockPanel>
-                    <TextBlock Text="Dashboard"
-                               Style="{StaticResource CC.Title}"
-                               DockPanel.Dock="Left"
-                               AutomationProperties.Name="Top bar title" />
-                    <TextBlock Name="TopBarClockText"
-                               Style="{StaticResource CC.Body}"
-                               DockPanel.Dock="Right"
-                               HorizontalAlignment="Right"
-                               AutomationProperties.Name="Server time" />
+                <DockPanel LastChildFill="False">
+                    <TextBlock Text="Dashboard" Style="{StaticResource CC.Title}" DockPanel.Dock="Left" />
+                    <Button Name="ChangeConnectionButton" Content="Change Connection" Margin="12,0,0,0" DockPanel.Dock="Right" Click="OnChangeConnectionClick" />
+                    <TextBlock Name="TopBarClockText" Style="{StaticResource CC.Body}" Margin="12,0,0,0" DockPanel.Dock="Right" />
+                    <TextBlock Name="TopBarEndpointText" Style="{StaticResource CC.Body}" Margin="12,0,0,0" DockPanel.Dock="Right" />
+                    <TextBlock Name="TopBarConnectionStateText" Style="{StaticResource CC.Body}" DockPanel.Dock="Right" FontWeight="SemiBold" />
                 </DockPanel>
             </Border>
 
             <Grid Grid.Row="1">
+                <Border Name="ConnectPanel" Visibility="Collapsed" Style="{StaticResource CC.Card}" Margin="0,0,0,12">
+                    <StackPanel>
+                        <TextBlock Text="Connect OpenClaw" Style="{StaticResource CC.Title}" />
+                        <TextBlock Name="ConnectHelpText" Style="{StaticResource CC.Body}" Margin="0,8,0,8"
+                                   Text="Set your OpenClaw Gateway URL, optionally add a token, then test and save." />
+                        <TextBlock Text="Gateway URL" Style="{StaticResource CC.Body}" />
+                        <TextBox Name="GatewayUrlInput" Margin="0,4,0,8" />
+                        <TextBlock Text="Gateway Token (optional)" Style="{StaticResource CC.Body}" />
+                        <TextBox Name="GatewayTokenInput" Margin="0,4,0,12" />
+                        <StackPanel Orientation="Horizontal">
+                            <Button Name="AutoDetectConnectionButton" Content="Auto-detect local gateway" Margin="0,0,8,0" Click="OnAutoDetectConnectionClick" />
+                            <Button Name="TestConnectionButton" Content="Test Connection" Margin="0,0,8,0" Click="OnTestConnectionClick" />
+                            <Button Name="SaveConnectionButton" Content="Save &amp; Connect" Click="OnSaveConnectionClick" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
                 <Grid Name="LoadingState" Visibility="Visible">
-                    <TextBlock Text="Loading dashboard..."
-                               Style="{StaticResource CC.Body}"
-                               VerticalAlignment="Center"
-                               HorizontalAlignment="Center"
-                               AutomationProperties.Name="Loading state" />
+                    <TextBlock Text="Loading dashboard..." Style="{StaticResource CC.Body}" VerticalAlignment="Center" HorizontalAlignment="Center" />
                 </Grid>
 
                 <Grid Name="EmptyState" Visibility="Collapsed">
-                    <TextBlock Text="No data available yet."
-                               Style="{StaticResource CC.Body}"
-                               VerticalAlignment="Center"
-                               HorizontalAlignment="Center"
-                               AutomationProperties.Name="Empty state" />
+                    <TextBlock Text="No data available yet." Style="{StaticResource CC.Body}" VerticalAlignment="Center" HorizontalAlignment="Center" />
                 </Grid>
 
                 <Grid Name="ErrorState" Visibility="Collapsed">
-                    <TextBlock Name="ErrorText"
-                               Text="Failed to load data"
-                               Foreground="Tomato"
-                               VerticalAlignment="Center"
-                               HorizontalAlignment="Center"
-                               AutomationProperties.Name="Error state" />
+                    <TextBlock Name="ErrorText" Text="Failed to load data" Foreground="Tomato" VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap" MaxWidth="720" />
                 </Grid>
 
-                <Grid Name="ContentState" Visibility="Collapsed">
+                <Grid Name="ContentState" Visibility="Collapsed" Margin="0,220,0,0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
@@ -113,15 +108,8 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
-
                             <TextBlock Text="Needs attention" Style="{StaticResource CC.Title}" Margin="0,0,0,8" />
-                            <DataGrid Grid.Row="1"
-                                      Name="NeedsAttentionGrid"
-                                      AutoGenerateColumns="False"
-                                      IsReadOnly="True"
-                                      HeadersVisibility="Column"
-                                      Background="{StaticResource CC.SurfaceAltBrush}"
-                                      Foreground="{StaticResource CC.TextBrush}">
+                            <DataGrid Grid.Row="1" Name="NeedsAttentionGrid" AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" Background="{StaticResource CC.SurfaceAltBrush}" Foreground="{StaticResource CC.TextBrush}">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Category" Binding="{Binding Category}" Width="*" />
                                     <DataGridTextColumn Header="Target" Binding="{Binding Title}" Width="2*" />
@@ -134,10 +122,7 @@
             </Grid>
 
             <Border Grid.Row="2" Background="{StaticResource CC.SurfaceBrush}" Padding="8" CornerRadius="8" Margin="0,12,0,0">
-                <TextBlock Name="StatusText"
-                           Style="{StaticResource CC.Body}"
-                           AutomationProperties.Name="Status strip text"
-                           Text="Ready" />
+                <TextBlock Name="StatusText" Style="{StaticResource CC.Body}" Text="Ready" />
             </Border>
         </Grid>
     </Grid>

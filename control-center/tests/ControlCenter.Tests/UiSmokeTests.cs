@@ -13,6 +13,19 @@ public sealed class UiSmokeTests
         Assert.Contains("Agents", xaml, StringComparison.Ordinal);
         Assert.Contains("Projects", xaml, StringComparison.Ordinal);
         Assert.Contains("Settings", xaml, StringComparison.Ordinal);
+        Assert.Contains("Connect OpenClaw", xaml, StringComparison.Ordinal);
+        Assert.Contains("Save &amp; Connect", xaml, StringComparison.Ordinal);
+        Assert.Contains("Change Connection", xaml, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void AppSettings_DefaultGatewayPort_UsesOpenClawPort()
+    {
+        var root = LocateRepositoryRoot();
+        var appSettingsPath = Path.Combine(root, "src", "ControlCenter.UI", "appsettings.json");
+        var appSettings = File.ReadAllText(appSettingsPath);
+
+        Assert.Contains("http://localhost:18789/", appSettings, StringComparison.Ordinal);
     }
 
     private static string LocateRepositoryRoot()
